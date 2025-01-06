@@ -1,12 +1,13 @@
-let tempData;
-function getData() {
-  fetch("https://dummyjson.com/products")
+function getData(url) {
+  return fetch(url)
     .then((response) => response.json())
-    .then((data) => {
-      let prices = [];
-      prices = data.map((item) => item.price);
-      console.log(prices);
-    });
+    .then((data) => data);
 }
 
-getData();
+const url = "https://dummyjson.com/products";
+
+getData(url).then((data) => {
+  console.log(data);
+  const sortedItems = data.products.sort((a, b) => b.price - a.price);
+  console.log(sortedItems[1]);
+});
