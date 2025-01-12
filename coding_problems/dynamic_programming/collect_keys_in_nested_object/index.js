@@ -24,21 +24,38 @@ Expected output
 ]
 */
 
-const chunks = ((array, n) => {
-  let chunked = [];
-  let temp = [];
-  let count = 0;
-  for (let i = 0; i < array.length; i++) {
-    //3
-    if (count == n || i == array.length) {
-      //true - count = 3
-      chunked.push(temp); //chunked = [[1,4,12], [3,2,6]]
-      temp = []; //temp[]
-      count = 0; //count =0
+const obj = {
+  check_id: 12345,
+  check_name: "Name of HTTP check",
+  check_type: "HTTP",
+  check_params: {
+    basic_auth: false,
+    params: ["size"],
+    encryption: {
+      enabled: true,
+    },
+  },
+};
+
+let result = [];
+function flattenKeys(obj, parent = "") {
+  for (let key in obj) {
+    // Create the new key by appending to the parent (dot notation)
+    const newKey = parent ? `${parent}.${key}` : key;
+    // If the value is an object, recursively call flattenKeys
+    if (
+      typeof obj[key] === "object" &&
+      obj[key] !== null &&
+      !Array.isArray(obj[key])
+    ) {
+      result.concat(flattenKeys(obj[key], newKey));
+    } else {
+      // If it's a primitive value or an array, add it to the result
+      result.push(newKey);
     }
-    temp.push(array[i]); //temp=[]
-    count++; //count = 0
   }
-  console.log(chunked);
-  return chunked;
-})([1, 4, 12, 3, 2, 6, -9, 0], 3);
+
+  return result;
+}
+
+console.log(flattenKeys(obj));
