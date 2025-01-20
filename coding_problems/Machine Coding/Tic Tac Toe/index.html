@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            width: 300px;
+            border: 1px solid;
+        }
+
+        .box {
+            flex: 1 1 30%;
+            border: 1px solid;
+            text-align: center;
+            line-height: 60px;
+            cursor: pointer;
+            min-height: 60px;
+        }
+
+        .selected {
+            pointer-events: none;
+        }
+
+        .winner {
+            background-color: aquamarine;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Tic Tac Toe</h2>
+    <div id="container" class="container">
+        <div class="box" data-item="0"></div>
+        <div class="box" data-item="1"></div>
+        <div class="box" data-item="2"></div>
+        <div class="box" data-item="3"></div>
+        <div class="box" data-item="4"></div>
+        <div class="box" data-item="5"></div>
+        <div class="box" data-item="6"></div>
+        <div class="box" data-item="7"></div>
+        <div class="box" data-item="8"></div>
+    </div>
+    <div>
+        <p id="message">Player X's turn.</p>
+    </div>
+    <div>
+        <button id="reset">Reset</button>
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>
