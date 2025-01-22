@@ -9,22 +9,25 @@
 
 <body>
     <h2>Snake and Ladder</h2>
-    <div id="board" class="board">
-    </div>
-    <img id="player1" src="./images/ninja_1.png" class="player player1" />
-
-    <div class="board-footer">
-        <div>
-            <p id="message">Player X's turn.</p>
+    <div class="container">
+        <div class="board-wrapper">
+            <img id="player1" src="./images/ninja_1.png" class="player player1" />
+            <div id="board" class="board">
+            </div>
         </div>
-        <div>
-            <img id="dice" class="dice" src="./images/dice/dice-6.png" />
-            <span id="dice-number-label"></span>
-        </div>
-        <button id="roller">Roll</button>
-
-        <div class="roller-wrapper">
-
+        <div class="board-controller-wrapper">
+            <div class="board-footer">
+                <div>
+                    <p id="message">Player X's turn.</p>
+                </div>
+                <div>
+                    <div id="dice-number-label"></div>
+                    <img id="dice" class="dice" src="./images/dice/dice-6.png" />
+                </div>
+                <div class="roller-wrapper">
+                    <button id="roller">Roll</button>
+                </div>
+            </div>
         </div>
     </div>
 

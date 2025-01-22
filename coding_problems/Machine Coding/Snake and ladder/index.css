@@ -1,6 +1,24 @@
 body {
   font-family: sans-serif;
 }
+
+h2 {
+  text-align: center;
+}
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  min-width: 786px;
+}
+
+.board-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(10, 50px);
@@ -8,8 +26,6 @@ body {
   border: 1px solid;
   width: 500px;
   position: relative;
-  left: 100px;
-
   font-weight: bold;
 }
 
@@ -39,10 +55,8 @@ body {
 }
 
 .player {
-  position: absolute;
   width: 30px;
   height: 30px;
-  top: 530px;
 }
 .player.player1 {
   left: 50px;
@@ -59,4 +73,35 @@ body {
 .dice {
   height: 35px;
   border-radius: 5px;
+}
+
+.roller-wrapper {
+  margin: 10px 0 0;
+}
+button {
+  padding: 12.5px 30px;
+  border: 0;
+  border-radius: 100px;
+  background-color: #2ba8fb;
+  color: #ffffff;
+  font-weight: Bold;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+}
+
+button:hover {
+  background-color: #6fc5ff;
+  box-shadow: 0 0 20px #6fc5ff50;
+}
+
+button:active {
+  background-color: #3d94cf;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+  box-shadow: none;
+  transform: scale(0.98);
+}
+button:disabled {
+  background-color: #7e7e7e;
+  box-shadow: none;
 }

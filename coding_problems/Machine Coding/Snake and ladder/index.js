@@ -39,24 +39,6 @@ class SnakeAndLadder {
   generateBoard() {
     const board = document.getElementById("board");
 
-    //upside down (1 to 100)
-    /* for (let index = 0; index < this.grid; index++) {
-      for (let i = 0; i < this.grid; i++) {
-        const cell = document.createElement("div");
-        cell.classList.add("cell");
-        let id;
-        //To print zig-zag numbers 
-        if (index % 2 === 0) {
-          id = i + index * this.grid + 1;
-        } else {
-          id = index * this.grid + (this.grid - i);
-        }
-        cell.innerText = id;
-        cell.dataset.index = id;
-        board.appendChild(cell);
-      }
-    } */
-
     //(100 to 1)
     for (let index = this.grid; index >= 1; index--) {
       for (let i = 1; i <= this.grid; i++) {
@@ -103,23 +85,48 @@ class SnakeAndLadder {
 
   addListeners() {
     const rollerBtn = document.getElementById("roller");
-    rollerBtn.addEventListener("click", this.handleRoller);
+    rollerBtn.addEventListener("click", (e) => {
+      this.playSound();
+      e.target.disabled = true;
+      const randomNumber = Math.floor(Math.random() * 6) + 1;
+      const diceLabel = document.getElementById("dice-number-label");
+      const dice = document.getElementById("dice");
+      dice.setAttribute("src", "./images/dice/dice-rolling.gif");
+      setTimeout(() => {
+        dice.setAttribute("src", `./images/dice/dice-${randomNumber}.png`);
+        dice.setAttribute("title", randomNumber);
+        diceLabel.innerHTML = `<p>Number : ${randomNumber}</p>`;
+        e.target.disabled = false;
+      }, 1000);
+    });
   }
 
-  handleRoller() {
-    const randomNumber = Math.floor(Math.random() * 6) + 1;
-    console.log("randomNumber : ", randomNumber);
-    const diceLabel = document.getElementById("dice-number-label");
-    const dice = document.getElementById("dice");
-    dice.setAttribute("src", "./images/dice/dice-rolling.gif");
-    setTimeout(() => {
-      dice.setAttribute("src", `./images/dice/dice-${randomNumber}.png`);
-      dice.setAttribute("title", randomNumber);
-      diceLabel.innerHTML = randomNumber;
-    }, 1000);
+  handleRoller() {}
+
+  updatePlayerPosition() {
+    console.log("updatePlayerPosition");
   }
 
-  updatePlayerPosition() {}
+  playSound(type = "dice") {
+    let url = "";
+    switch (type) {
+      case "dice":
+        url = "./sound/dice-rolling.mp3";
+        break;
+      case "run":
+        url = "./sound/running.mp3";
+        break;
+      case "snake":
+        url = "./sound/snake-hiss.m4a";
+        break;
+      case "ladder":
+        url = "./sound/energy-up.mp3";
+        break;
+      default:
+        url = "./sound/dice-rolling.mp3";
+    }
+    new Audio(url).play();
+  }
 }
 
 const game = new SnakeAndLadder(10, 2);
