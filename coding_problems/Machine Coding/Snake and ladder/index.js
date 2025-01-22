@@ -1,6 +1,6 @@
 class SnakeAndLadder {
   grid;
-  players;
+  numberOfPlayers;
   snakes = {
     32: 10,
     36: 6,
@@ -21,15 +21,19 @@ class SnakeAndLadder {
     80: 99,
   };
 
+  player1Position = {};
+  player2Position = {};
+
   constructor(grid = 10, players = 2) {
     this.grid = grid; // number of cells
-    this.players = players; // number of players
+    this.numberOfPlayers = players; // number of players
   }
 
   init() {
     //generate a board game
     this.generateBoard();
     //add event listeners
+    this.addListeners();
   }
 
   generateBoard() {
@@ -53,7 +57,7 @@ class SnakeAndLadder {
       }
     } */
 
-    //Bottoms Up (100 to 1)
+    //(100 to 1)
     for (let index = this.grid; index >= 1; index--) {
       for (let i = 1; i <= this.grid; i++) {
         const cell = document.createElement("div");
@@ -64,24 +68,58 @@ class SnakeAndLadder {
         } else {
           id = index * this.grid - (this.grid - i);
         }
-        this.paintBoardCellBG(cell, id);
+
         cell.innerText = id;
         cell.dataset.index = id;
+        cell.id = id;
+        this.paintBoardCellBG(cell, id);
         board.appendChild(cell);
       }
     }
+    this.paintSnakeLadderCellBG();
   }
 
   paintBoardCellBG(cell, id) {
     cell.classList.add("cell");
     id % 2 === 0 ? cell.classList.add("even") : cell.classList.add("odd");
-    if (this.snakes[id]) {
-      cell.classList.add("snake-start");
+  }
+
+  paintSnakeLadderCellBG() {
+    //snakes
+    for (let id in this.snakes) {
+      const snakeStartCell = document.getElementById(id);
+      snakeStartCell.classList.add("snake-start");
+      const snakeEndCell = document.getElementById(this.snakes[id]);
+      snakeEndCell.classList.add("snake-end");
     }
-    if (this.ladders[id]) {
-      cell.classList.add("ladder-start");
+    //ladders
+    for (let id in this.ladders) {
+      const ladderStartCell = document.getElementById(id);
+      ladderStartCell.classList.add("ladder-start");
+      const ladderEndCell = document.getElementById(this.ladders[id]);
+      ladderEndCell.classList.add("ladder-end");
     }
   }
+
+  addListeners() {
+    const rollerBtn = document.getElementById("roller");
+    rollerBtn.addEventListener("click", this.handleRoller);
+  }
+
+  handleRoller() {
+    const randomNumber = Math.floor(Math.random() * 6) + 1;
+    console.log("randomNumber : ", randomNumber);
+    const diceLabel = document.getElementById("dice-number-label");
+    const dice = document.getElementById("dice");
+    dice.setAttribute("src", "./images/dice/dice-rolling.gif");
+    setTimeout(() => {
+      dice.setAttribute("src", `./images/dice/dice-${randomNumber}.png`);
+      dice.setAttribute("title", randomNumber);
+      diceLabel.innerHTML = randomNumber;
+    }, 1000);
+  }
+
+  updatePlayerPosition() {}
 }
 
 const game = new SnakeAndLadder(10, 2);
