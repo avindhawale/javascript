@@ -1,17 +1,25 @@
+/* General Styles */
 body {
   font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 h2 {
   text-align: center;
+  margin-bottom: 20px;
 }
+
 .container {
   display: flex;
   align-items: center;
   justify-content: space-around;
   min-width: 786px;
+  padding: 20px;
 }
 
+/* Board Styles */
 .board-wrapper {
   display: flex;
   flex-wrap: wrap;
@@ -23,70 +31,87 @@ h2 {
   display: grid;
   grid-template-columns: repeat(10, 50px);
   grid-template-rows: repeat(10, 50px);
-  border: 1px solid;
   width: 500px;
+  border: 1px solid #000;
   position: relative;
   font-weight: bold;
 }
 
 .cell {
-  border: 1px solid;
+  border: 1px solid #000;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
 }
+
+/* Cell Background Colors */
 .cell.even {
   background-color: #d3e7ff;
 }
+
 .cell.odd {
   background-color: #f7ff87;
 }
+
 .cell.snake-start {
   background-color: #ff1a1a;
 }
+
 .cell.snake-end {
   background-color: #ff8f8f;
 }
+
 .cell.ladder-start {
-  background-color: green;
+  background-color: #008000;
 }
+
 .cell.ladder-end {
   background-color: #6cff6c;
 }
 
+/* Player Styles */
 .player {
   width: 30px;
   height: 30px;
+  position: absolute;
 }
+
 .player.player1 {
-  left: 50px;
+  left: 30px;
 }
 
 .player.player2 {
   left: 20px;
 }
 
+/* Footer Styles */
 .board-footer {
   text-align: center;
+  margin-top: 20px;
 }
 
+/* Dice Styles */
 .dice {
   height: 35px;
   border-radius: 5px;
 }
 
+/* Roller Button Styles */
 .roller-wrapper {
-  margin: 10px 0 0;
+  margin-top: 10px;
 }
+
 button {
   padding: 12.5px 30px;
-  border: 0;
+  border: none;
   border-radius: 100px;
   background-color: #2ba8fb;
-  color: #ffffff;
-  font-weight: Bold;
-  transition: all 0.5s;
-  -webkit-transition: all 0.5s;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.5s ease;
 }
 
 button:hover {
@@ -96,12 +121,13 @@ button:hover {
 
 button:active {
   background-color: #3d94cf;
-  transition: all 0.25s;
-  -webkit-transition: all 0.25s;
   box-shadow: none;
   transform: scale(0.98);
+  transition: all 0.25s ease;
 }
+
 button:disabled {
   background-color: #7e7e7e;
   box-shadow: none;
+  cursor: not-allowed;
 }
