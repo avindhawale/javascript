@@ -142,54 +142,62 @@ class SnakeAndLadder {
   }
 
   // Update player position
-  updatePlayerPosition(number, type = "move") {
+  updatePlayerPosition(diceRoll, type = "move") {
     this.rollerButton.disabled = true;
-    let currentPlayerPosition =
-      this.playerPositions["player" + this.currentPlayer];
 
-    //Invalid move
-    if (currentPlayerPosition > this.grid * this.grid) {
+    let currentPosition = this.playerPositions[`player${this.currentPlayer}`];
+
+    // Handle invalid moves
+    if (currentPosition > this.grid * this.grid) {
       this.rollerButton.disabled = false;
       return;
     }
-    if (type === "move") {
-      currentPlayerPosition += 100;
-    } else if (type === "snakeBite") {
-      currentPlayerPosition = this.snakes[currentPlayerPosition];
-    } else if (type === "ladder") {
-      currentPlayerPosition = this.ladders[currentPlayerPosition];
-    }
-    this.playerPositions["player" + this.currentPlayer] = currentPlayerPosition;
 
-    this.movePlayerToNewPosition(currentPlayerPosition, () => {
-      let playAgain = false;
-      if (this.snakes[currentPlayerPosition]) {
-        playAgain = true;
-        // snake bite
-        this.playSound("snake");
-        this.updatePlayerPosition(
-          this.snakes[currentPlayerPosition],
-          "snakeBite"
-        );
-      } else if (this.ladders[currentPlayerPosition]) {
-        playAgain = true;
-        // ladder on the cell
-        this.playSound("ladder");
-        this.updatePlayerPosition(
-          this.ladders[currentPlayerPosition],
-          "ladder"
-        );
+    // Update position based on the type of move
+    if (type === "move") {
+      currentPosition += diceRoll;
+    } else if (type === "snakeBite") {
+      currentPosition = this.snakes[currentPosition];
+    } else if (type === "ladder") {
+      currentPosition = this.ladders[currentPosition];
+    }
+
+    this.playerPositions[`player${this.currentPlayer}`] = currentPosition;
+
+    // Move the player and handle post-move logic
+    this.movePlayerToNewPosition(currentPosition, () => {
+      if (this.handleSnakesOrLadders(currentPosition)) {
+        return;
+      }
+
+      if (this.checkForWinner(currentPosition)) {
+        this.declareWinner();
       } else {
-        const winner = this.checkForWinner(currentPlayerPosition);
-        if (winner) this.declareWinner();
-        else {
-          this.rollerButton.disabled = false;
-          if (!playAgain && number !== 6) {
-            this.toggleCurrentPlayer();
-          }
+        this.rollerButton.disabled = false;
+
+        // Allow the current player to roll again if they rolled a 6
+        if (diceRoll !== 6) {
+          this.toggleCurrentPlayer();
         }
       }
     });
+  }
+
+  // Handle snake bites or ladders at the player's position
+  handleSnakesOrLadders(position) {
+    if (this.snakes[position]) {
+      this.playSound("snake");
+      this.updatePlayerPosition(this.snakes[position], "snakeBite");
+      return true; // Player gets another turn
+    }
+
+    if (this.ladders[position]) {
+      this.playSound("ladder");
+      this.updatePlayerPosition(this.ladders[position], "ladder");
+      return true; // Player gets another turn
+    }
+
+    return false; // No snakes or ladders, normal turn
   }
 
   // Move player to a new position
