@@ -1,62 +1,54 @@
 class SnakeAndLadder {
-  grid;
-  numberOfPlayers;
-  snakes = {
-    28: 10,
-    37: 3,
-    48: 16,
-    75: 32,
-    94: 71,
-    96: 42,
-  };
-  ladders = {
-    4: 56,
-    12: 50,
-    14: 55,
-    22: 58,
-    41: 79,
-    54: 88,
-  };
-
-  playerPositions = {};
-  rollerButton;
-  currentPlayer = 1;
-  message;
-
   constructor(grid = 10, players = 2) {
     this.grid = grid;
     this.numberOfPlayers = players;
-    this.initializePlayerPositions();
+    this.snakes = {
+      28: 10,
+      37: 3,
+      48: 16,
+      75: 32,
+      94: 71,
+      96: 42,
+    };
+    this.ladders = {
+      4: 56,
+      12: 50,
+      14: 55,
+      22: 58,
+      41: 79,
+      54: 88,
+    };
+    this.playerPositions = {};
+    this.currentPlayer = 1;
+  }
+
+  // Initialize the game
+  init() {
+    this.generateBoard();
+    this.initializePlayerCellPositions();
+    this.createPlayers();
+    this.addEventListeners();
   }
 
   // Initialize players' starting positions
-  initializePlayerPositions() {
+  initializePlayerCellPositions() {
     for (let i = 1; i <= this.numberOfPlayers; i++) {
       this.playerPositions[`player${i}`] = 0;
     }
   }
 
-  init() {
-    this.generateBoard();
-    this.createPlayers();
-    this.addEventListeners();
-  }
-
   // Generate the game board
   generateBoard() {
     const board = document.getElementById("board");
-    board.innerHTML = ""; // Clear existing content (if any)
+    board.innerHTML = "";
 
     for (let row = this.grid; row >= 1; row--) {
       for (let col = 1; col <= this.grid; col++) {
         const cell = document.createElement("div");
         const cellId = this.calculateCellId(row, col);
-
-        //cell.innerText = cellId;
         cell.dataset.index = cellId;
         cell.id = cellId;
         this.styleCell(cell, cellId);
-
         board.appendChild(cell);
       }
     }
@@ -64,15 +56,17 @@ class SnakeAndLadder {
     this.highlightSnakesAndLadders();
   }
 
+  // Create player avatars
   createPlayers() {
     const playerStand = document.getElementById("player-stand");
-    for (let index = 1; index <= this.numberOfPlayers; index++) {
+    playerStand.innerHTML = ""; // Clear existing content
+
+    for (let i = 1; i <= this.numberOfPlayers; i++) {
       const player = document.createElement("img");
-      player.setAttribute("src", `./images/players/player_${index}.gif`);
-      player.setAttribute("alt", `Player ${index}`);
-      player.classList.add("player");
-      player.classList.add("player_" + index);
-      player.id = "player" + index;
+      player.src = `./images/players/player_${i}.gif`;
+      player.alt = `Player ${i}`;
+      player.classList.add("player", `player_${i}`);
+      player.id = `player${i}`;
       playerStand.appendChild(player);
     }
   }
@@ -86,8 +80,7 @@ class SnakeAndLadder {
 
   // Style individual cells
   styleCell(cell, cellId) {
-    cell.classList.add("cell");
-    cell.classList.add(cellId % 2 === 0 ? "even" : "odd");
+    cell.classList.add("cell", cellId % 2 === 0 ? "even" : "odd");
   }
 
   // Highlight snake and ladder cells
@@ -106,25 +99,25 @@ class SnakeAndLadder {
   // Add event listeners
   addEventListeners() {
     this.rollerButton = document.getElementById("roller");
-    this.rollerButton.addEventListener("click", (e) => this.handleDiceRoll(e));
+    this.rollerButton.addEventListener("click", () => this.handleDiceRoll());
+
+    this.resetButton = document.getElementById("reset");
+    this.resetButton.addEventListener("click", () => this.handleResetButton());
+
     this.message = document.getElementById("message");
+    this.diceNumberLabel = document.getElementById("dice-number-label");
   }
 
   // Handle dice roll logic
-  handleDiceRoll(event) {
+  handleDiceRoll() {
     this.rollerButton.disabled = true;
 
     this.playSound("dice");
-    const diceRoll = this.rollDice(); // Updated variable name
+    const diceRoll = this.rollDice();
 
     this.animateDiceRoll(diceRoll, () => {
       console.log(`Rolled: ${diceRoll}`);
-      // Add logic to update player position here
       this.updatePlayerPosition(diceRoll);
-      //Let the moving animation complete of 2 secs.
-      setTimeout(() => {
-        this.toggleCurrentPlayer();
-      }, 2000);
     });
   }
 
@@ -133,28 +126,34 @@ class SnakeAndLadder {
     return Math.floor(Math.random() * 6) + 1;
   }
 
-  // Animate dice roll and update the dice display
+  // Animate dice roll
   animateDiceRoll(diceRoll, callback) {
     const dice = document.getElementById("dice");
-    const diceLabel = document.getElementById("dice-number-label");
+    this.diceNumberLabel = document.getElementById("dice-number-label");
 
-    dice.setAttribute("src", "./images/dice/dice-rolling.gif");
+    dice.src = "./images/dice/dice-rolling.gif";
 
     setTimeout(() => {
-      dice.setAttribute("src", `./images/dice/dice-${diceRoll}.png`);
-      dice.setAttribute("title", diceRoll);
-      diceLabel.innerHTML = `<p>Number: ${diceRoll}</p>`;
+      dice.src = `./images/dice/dice-${diceRoll}.png`;
+      dice.title = diceRoll;
+      this.diceNumberLabel.innerHTML = `<p>Number: ${diceRoll}</p>`;
       callback();
     }, 1000);
   }
 
+  // Update player position
   updatePlayerPosition(number, type = "move") {
     this.rollerButton.disabled = true;
     let currentPlayerPosition =
       this.playerPositions["player" + this.currentPlayer];
 
+    //Invalid move
+    if (currentPlayerPosition > this.grid * this.grid) {
+      this.rollerButton.disabled = false;
+      return;
+    }
     if (type === "move") {
-      currentPlayerPosition += number;
+      currentPlayerPosition += 100;
     } else if (type === "snakeBite") {
       currentPlayerPosition = this.snakes[currentPlayerPosition];
     } else if (type === "ladder") {
@@ -162,83 +161,100 @@ class SnakeAndLadder {
     }
     this.playerPositions["player" + this.currentPlayer] = currentPlayerPosition;
 
-    //Invalid move
-    if (currentPlayerPosition > this.grid * this.grid) {
-      this.rollerButton.disabled = false;
-      return;
-    }
-
     this.movePlayerToNewPosition(currentPlayerPosition, () => {
-      const snakeBite = this.checkForSnakeBite(currentPlayerPosition);
-      if (snakeBite) {
+      let playAgain = false;
+      if (this.snakes[currentPlayerPosition]) {
+        playAgain = true;
+        // snake bite
         this.playSound("snake");
         this.updatePlayerPosition(
           this.snakes[currentPlayerPosition],
           "snakeBite"
         );
-      }
-      const hasLadder = this.checkForLadder(currentPlayerPosition);
-      if (hasLadder) {
+      } else if (this.ladders[currentPlayerPosition]) {
+        playAgain = true;
+        // ladder on the cell
         this.playSound("ladder");
         this.updatePlayerPosition(
           this.ladders[currentPlayerPosition],
           "ladder"
         );
+      } else {
+        const winner = this.checkForWinner(currentPlayerPosition);
+        if (winner) this.declareWinner();
+        else {
+          this.rollerButton.disabled = false;
+          if (!playAgain && number !== 6) {
+            this.toggleCurrentPlayer();
+          }
+        }
       }
-      const winner = this.checkForWinner(currentPlayerPosition);
-      if (winner) this.declareWinner();
-
-      this.rollerButton.disabled = false;
     });
   }
 
+  // Move player to a new position
+  movePlayerToNewPosition(cellNumber, callback) {
+    this.playSound("run");
+    const targetCell = document.getElementById(cellNumber);
+    const player = document.getElementById(`player${this.currentPlayer}`);
+    player.style.left = `${targetCell.offsetLeft + 55}px`;
+    player.style.top = `${targetCell.offsetTop + 10}px`;
+
+    setTimeout(callback, 2000);
+  }
+
+  // Toggle to the next player
   toggleCurrentPlayer() {
-    this.numberOfPlayers === this.currentPlayer
-      ? (this.currentPlayer = 1)
-      : this.currentPlayer++;
-    console.log("currentPlayer : ", this.currentPlayer);
+    this.currentPlayer =
+      this.currentPlayer === this.numberOfPlayers ? 1 : this.currentPlayer + 1;
     this.message.innerHTML = `Player ${this.currentPlayer}'s turn.`;
   }
 
+  // Declare the winner
   declareWinner() {
-    console.log("Winner");
+    this.rollerButton.disabled = true;
+    this.message.innerHTML = `Player ${this.currentPlayer} wins!`;
+    this.message.classList.add("winner");
+    this.showResetButton();
   }
 
+  // Show and hide reset button
+  showResetButton() {
+    this.resetButton.classList.add("show");
+  }
+
+  hideResetButton() {
+    this.resetButton.classList.remove("show");
+  }
+
+  // Check if a player wins
   checkForWinner(position) {
     return position === this.grid * this.grid;
   }
 
-  checkForSnakeBite(cell) {
-    return this.snakes.hasOwnProperty(cell);
-  }
-
-  checkForLadder(cell) {
-    return this.ladders.hasOwnProperty(cell);
-  }
-
-  movePlayerToNewPosition(cellNumber, done) {
-    this.playSound("run");
-    const cellOffset = document.getElementById(cellNumber);
-    const player = document.getElementById("player" + this.currentPlayer);
-    player.style.left = cellOffset.offsetLeft + 55 + "px";
-    player.style.top = cellOffset.offsetTop + 10 + "px";
-    setTimeout(() => {
-      done();
-    }, 2000);
-  }
-
   // Play sound effects
-  playSound(type = "dice") {
-    const soundMap = {
+  playSound(type) {
+    const sounds = {
       dice: "./sound/dice-rolling.mp3",
       run: "./sound/running.mp3",
       snake: "./sound/snake-hiss.m4a",
       ladder: "./sound/energy-up.mp3",
     };
-    const soundUrl = soundMap[type] || soundMap.dice;
-    new Audio(soundUrl).play();
+    new Audio(sounds[type] || sounds.dice).play();
+  }
+
+  // Handle reset button
+  handleResetButton() {
+    this.hideResetButton();
+    this.rollerButton.disabled = false;
+    this.message.classList.remove("winner");
+    this.currentPlayer = 1;
+    this.message.innerHTML = `Player ${this.currentPlayer}'s turn.`;
+    this.diceNumberLabel.innerHTML = "";
+    this.init();
   }
 }
 
+// Initialize the game
 const game = new SnakeAndLadder(10, 5);
 game.init();
