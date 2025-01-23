@@ -20,6 +20,8 @@ class SnakeAndLadder {
 
   playerPositions = {};
   rollerButton;
+  currentPlayer = 1;
+  message;
 
   constructor(grid = 10, players = 2) {
     this.grid = grid;
@@ -36,6 +38,7 @@ class SnakeAndLadder {
 
   init() {
     this.generateBoard();
+    this.createPlayers();
     this.addEventListeners();
   }
 
@@ -59,6 +62,19 @@ class SnakeAndLadder {
     }
 
     this.highlightSnakesAndLadders();
+  }
+
+  createPlayers() {
+    const playerStand = document.getElementById("player-stand");
+    for (let index = 1; index <= this.numberOfPlayers; index++) {
+      const player = document.createElement("img");
+      player.setAttribute("src", `./images/players/player_${index}.gif`);
+      player.setAttribute("alt", `Player ${index}`);
+      player.classList.add("player");
+      player.classList.add("player_" + index);
+      player.id = "player" + index;
+      playerStand.appendChild(player);
+    }
   }
 
   // Calculate cell ID for zig-zag pattern
@@ -91,6 +107,7 @@ class SnakeAndLadder {
   addEventListeners() {
     this.rollerButton = document.getElementById("roller");
     this.rollerButton.addEventListener("click", (e) => this.handleDiceRoll(e));
+    this.message = document.getElementById("message");
   }
 
   // Handle dice roll logic
@@ -104,6 +121,10 @@ class SnakeAndLadder {
       console.log(`Rolled: ${diceRoll}`);
       // Add logic to update player position here
       this.updatePlayerPosition(diceRoll);
+      //Let the moving animation complete of 2 secs.
+      setTimeout(() => {
+        this.toggleCurrentPlayer();
+      }, 2000);
     });
   }
 
@@ -129,42 +150,54 @@ class SnakeAndLadder {
 
   updatePlayerPosition(number, type = "move") {
     this.rollerButton.disabled = true;
+    let currentPlayerPosition =
+      this.playerPositions["player" + this.currentPlayer];
+
     if (type === "move") {
-      this.playerPositions.player1 += 50;
+      currentPlayerPosition += number;
     } else if (type === "snakeBite") {
-      this.playerPositions.player1 = this.snakes[this.playerPositions.player1];
+      currentPlayerPosition = this.snakes[currentPlayerPosition];
     } else if (type === "ladder") {
-      this.playerPositions.player1 = this.ladders[this.playerPositions.player1];
+      currentPlayerPosition = this.ladders[currentPlayerPosition];
     }
+    this.playerPositions["player" + this.currentPlayer] = currentPlayerPosition;
 
     //Invalid move
-    if (this.playerPositions.player1 > this.grid * this.grid) {
+    if (currentPlayerPosition > this.grid * this.grid) {
       this.rollerButton.disabled = false;
       return;
     }
 
-    this.movePlayerToNewPosition(this.playerPositions.player1, () => {
-      const snakeBite = this.checkForSnakeBite(this.playerPositions.player1);
+    this.movePlayerToNewPosition(currentPlayerPosition, () => {
+      const snakeBite = this.checkForSnakeBite(currentPlayerPosition);
       if (snakeBite) {
         this.playSound("snake");
         this.updatePlayerPosition(
-          this.snakes[this.playerPositions.player1],
+          this.snakes[currentPlayerPosition],
           "snakeBite"
         );
       }
-      const hasLadder = this.checkForLadder(this.playerPositions.player1);
+      const hasLadder = this.checkForLadder(currentPlayerPosition);
       if (hasLadder) {
         this.playSound("ladder");
         this.updatePlayerPosition(
-          this.ladders[this.playerPositions.player1],
+          this.ladders[currentPlayerPosition],
           "ladder"
         );
       }
-      const winner = this.checkForWinner(this.playerPositions.player1);
+      const winner = this.checkForWinner(currentPlayerPosition);
       if (winner) this.declareWinner();
 
       this.rollerButton.disabled = false;
     });
+  }
+
+  toggleCurrentPlayer() {
+    this.numberOfPlayers === this.currentPlayer
+      ? (this.currentPlayer = 1)
+      : this.currentPlayer++;
+    console.log("currentPlayer : ", this.currentPlayer);
+    this.message.innerHTML = `Player ${this.currentPlayer}'s turn.`;
   }
 
   declareWinner() {
@@ -186,9 +219,9 @@ class SnakeAndLadder {
   movePlayerToNewPosition(cellNumber, done) {
     this.playSound("run");
     const cellOffset = document.getElementById(cellNumber);
-    const player1 = document.getElementById("player1");
-    player1.style.left = cellOffset.offsetLeft + 10 + "px";
-    player1.style.top = cellOffset.offsetTop + 50 + "px";
+    const player = document.getElementById("player" + this.currentPlayer);
+    player.style.left = cellOffset.offsetLeft + 55 + "px";
+    player.style.top = cellOffset.offsetTop + 10 + "px";
     setTimeout(() => {
       done();
     }, 2000);
@@ -207,5 +240,5 @@ class SnakeAndLadder {
   }
 }
 
-const game = new SnakeAndLadder(10, 2);
+const game = new SnakeAndLadder(10, 5);
 game.init();

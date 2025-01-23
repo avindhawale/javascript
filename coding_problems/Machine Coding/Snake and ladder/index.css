@@ -14,31 +14,55 @@ h2 {
 .container {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: flex-start;
   min-width: 786px;
   padding-left: 20px;
   position: relative;
 }
 
 /* Player Styles */
+.player-stand {
+  width: 45px;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column-reverse;
+}
 .player {
   width: 30px;
   height: 30px;
-  position: relative;
+  position: absolute;
   z-index: 111;
   transition: all 2s ease;
-  top: 500px;
+  background: transparent;
 }
 
-.player.player1 {
-  left: -30px;
+.player.player_1 {
+  top: 460px;
 }
 
-.player.player2 {
-  left: 20px;
+.player.player_2 {
+  top: 420px;
+}
+.player.player_3 {
+  top: 380px;
+}
+
+.player.player_4 {
+  top: 340px;
+}
+
+.player.player_5 {
+  top: 300px;
 }
 
 /* Board Styles */
+.board-wrapper {
+  display: flex;
+}
+.board-controller-wrapper {
+  padding-left: 40px;
+}
 .board {
   display: grid;
   grid-template-columns: repeat(10, 50px);
