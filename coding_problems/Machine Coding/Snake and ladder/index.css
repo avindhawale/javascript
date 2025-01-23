@@ -156,3 +156,11 @@ button:disabled {
   box-shadow: none;
   cursor: not-allowed;
 }
+
+.reset {
+  display: none;
+  margin: 10px;
+}
+.reset.show {
+  display: block;
+}
