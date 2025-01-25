@@ -208,7 +208,7 @@ class SnakeAndLadder {
     player.style.left = `${targetCell.offsetLeft + 55}px`;
     player.style.top = `${targetCell.offsetTop + 10}px`;
 
-    setTimeout(callback, 2000);
+    setTimeout(callback, 2000); // let the animation finish
   }
 
   // Toggle to the next player
@@ -253,13 +253,37 @@ class SnakeAndLadder {
 
   // Handle reset button
   handleResetButton() {
+    this.resetGameState();
+    this.resetUI();
+    this.startNewGame();
+  }
+
+  // Reset game state
+  resetGameState() {
+    this.playerPositions = {};
+    this.currentPlayer = 1;
+    this.initializePlayerCellPositions();
+  }
+
+  // Reset UI elements
+  resetUI() {
     this.hideResetButton();
     this.rollerButton.disabled = false;
     this.message.classList.remove("winner");
-    this.currentPlayer = 1;
     this.message.innerHTML = `Player ${this.currentPlayer}'s turn.`;
     this.diceNumberLabel.innerHTML = "";
-    this.init();
+
+    // Reset player positions on the board
+    const players = document.querySelectorAll(".player");
+    players.forEach((player, i) => {
+      player.style.left = "auto";
+      player.style.top = null;
+    });
+  }
+
+  // Start a new game
+  startNewGame() {
+    this.highlightSnakesAndLadders();
   }
 }
 
